@@ -2,9 +2,75 @@ require('dotenv').config();
 
 const express = require('express');
 const app = express();
+const fs = require('fs');
+
+const ADMIN_PASSWORD = 'changestatus';
+let botStatus = 'ONLINE';
+
+if (fs.existsSync('./status.json')) {
+    try {
+        botStatus = JSON.parse(
+            fs.readFileSync('./status.json', 'utf8')
+        ).status || 'ONLINE';
+    } catch {}
+}
+
+function saveStatus() {
+    fs.writeFileSync(
+        './status.json',
+        JSON.stringify({ status: botStatus }, null, 2)
+    );
+}
 
 const PORT = process.env.PORT || 3000;
+app.get('/admin', (req, res) => {
+    res.send(`
+    <html>
+    <body style="background:#111827;color:white;font-family:Arial;padding:40px;">
+        <h1>LazR Verify Admin</h1>
 
+        <form method="POST" action="/changestatus">
+            <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                style="padding:10px;"
+            >
+
+            <br><br>
+
+            <button name="status" value="ONLINE">
+                Set Online
+            </button>
+
+            <button name="status" value="OFFLINE">
+                Set Offline
+            </button>
+        </form>
+
+        <p>Current Status: ${botStatus}</p>
+    </body>
+    </html>
+    `);
+});
+
+app.use(express.urlencoded({ extended: true }));
+
+app.post('/changestatus', (req, res) => {
+
+    const { password, status } = req.body;
+
+    if (password !== ADMIN_PASSWORD) {
+        return res.status(403).send('Wrong password');
+    }
+
+    if (status === 'ONLINE' || status === 'OFFLINE') {
+        botStatus = status;
+        saveStatus();
+    }
+
+    res.redirect('/admin');
+});
 app.get('/', (req, res) => {
     res.send(`
 <!DOCTYPE html>
@@ -129,11 +195,15 @@ app.get('/', (req, res) => {
 
     <div class="logo">🤖</div>
 
-    <h1>LazR Verify</h1>
+    <h1>LazR Bot</h1>
 
-    <div class="status">
-        ✅ ONLINE
-    </div>
+<div class="status" style="
+background:${botStatus === 'ONLINE' ? '#16a34a' : '#dc2626'};
+">
+    ${botStatus === 'ONLINE'
+        ? '✅ ONLINE'
+        : '🔴 OFFLINE'}
+</div>
 
     <p class="description">
         Powerful Discord verification, moderation and community protection bot.
@@ -186,7 +256,6 @@ app.listen(PORT, () => {
     console.log(`Web server running on port ${PORT}`);
 });
 
-const fs = require('fs');
 const {
     Client,
     GatewayIntentBits,
