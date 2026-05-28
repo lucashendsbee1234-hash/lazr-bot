@@ -28,28 +28,40 @@ app.get('/admin', (req, res) => {
     <html>
     <body style="background:#111827;color:white;font-family:Arial;padding:40px;">
         <h1>LazR Verify Admin</h1>
+<form method="POST" action="/changestatus">
+    <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        style="padding:10px;"
+    >
 
-        <form method="POST" action="/changestatus">
-            <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                style="padding:10px;"
-            >
+    <br><br>
 
-            <br><br>
+    <button name="status" value="ONLINE">
+        Set Online
+    </button>
 
-            <button name="status" value="ONLINE">
-                Set Online
-            </button>
+    <button name="status" value="OFFLINE">
+        Set Offline
+    </button>
+</form>
 
-            <button name="status" value="OFFLINE">
-                Set Offline
-            </button>
-        </form>
+<br>
 
-        <p>Current Status: ${botStatus}</p>
-    </body>
+<a href="/" style="
+    display:inline-block;
+    background:#2563eb;
+    color:white;
+    text-decoration:none;
+    padding:10px 20px;
+    border-radius:8px;
+    font-weight:bold;
+">
+    ← Go Back
+</a>
+
+<p>Current Status: ${botStatus}</p>    </body>
     </html>
     `);
 });
