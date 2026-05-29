@@ -1,5 +1,6 @@
 const {
-    SlashCommandBuilder
+    SlashCommandBuilder,
+    EmbedBuilder
 } = require("discord.js");
 
 const fs = require("fs");
@@ -8,17 +9,15 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName("leaderboard")
-        .setDescription("View XP leaderboard"),
+        .setDescription("View the server XP leaderboard"),
 
     async execute(interaction) {
 
-        const data =
-            JSON.parse(
-                fs.readFileSync("./data/xp.json")
-            );
+        const data = JSON.parse(
+            fs.readFileSync("./data/xp.json")
+        );
 
-        const sorted =
-            Object.entries(data)
+        const sorted = Object.entries(data)
             .sort(
                 (a, b) =>
                     b[1].level - a[1].level ||
@@ -26,19 +25,34 @@ module.exports = {
             )
             .slice(0, 10);
 
-        let text = "";
+        let leaderboard = "";
 
-        for (let i = 0; i < sorted.length; i++) {
+        sorted.forEach(([id, stats], index) => {
 
-            const [id, stats] = sorted[i];
+            let medal = "🔹";
 
-            text +=
-                `#${i + 1} <@${id}> — Level ${stats.level}\n`;
-        }
+            if (index === 0) medal = "🥇";
+            if (index === 1) medal = "🥈";
+            if (index === 2) medal = "🥉";
 
-        interaction.reply({
-            content:
-                `🏆 **Leaderboard**\n\n${text}`
+            leaderboard +=
+                `${medal} **#${index + 1}** <@${id}>\n` +
+                `↳ Level **${stats.level}** • ${stats.xp} XP\n\n`;
+        });
+
+        const embed = new EmbedBuilder()
+            .setColor("#a855f7")
+            .setTitle("🏆 LazR Hub Leaderboard")
+            .setDescription(
+                leaderboard || "No leaderboard data yet."
+            )
+            .setFooter({
+                text: "Keep chatting to earn XP!"
+            })
+            .setTimestamp();
+
+        await interaction.reply({
+            embeds: [embed]
         });
     }
 };
