@@ -25,6 +25,7 @@ const ownerCommands = [
     "embed",
     "lock",
     "unlock",
+    "ranksetup",
     "welcomesetup"
 ];
 

@@ -37,10 +37,25 @@ module.exports = {
 
             data[message.author.id].xp = 0;
 
-            message.channel.send(
-                `🎉 ${message.author} reached level ${data[message.author.id].level}!`
-            );
-        }
+ if (fs.existsSync("./data/rankchannel.json")) {
+
+    const rankData = JSON.parse(
+        fs.readFileSync("./data/rankchannel.json")
+    );
+
+    const levelChannel =
+        message.guild.channels.cache.get(
+            rankData.channelId
+        );
+
+    if (levelChannel) {
+
+        await levelChannel.send(
+            `🎉 ${message.author} reached level ${data[message.author.id].level}!`
+        );
+
+    }
+}        }
 
         fs.writeFileSync(
             xpFile,
