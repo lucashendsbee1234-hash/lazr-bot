@@ -27,6 +27,9 @@ const ownerCommands = [
     "unlock",
     "ranksetup",
     "setlevel",
+    "givexp",
+    "resetlevel",
+    "rankrole",
     "welcomesetup"
 ];
 

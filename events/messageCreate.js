@@ -9,60 +9,144 @@ module.exports = {
     async execute(message) {
 
         if (message.author.bot) return;
+        if (!message.guild) return;
 
-        // XP SYSTEM
-        const xpFile = "./data/xp.json";
+       // XP COOLDOWN MAP
+global.xpCooldowns ??= new Map();
 
-        let data = {};
+const xpFile = "./data/xp.json";
 
-        if (fs.existsSync(xpFile)) {
-            data = JSON.parse(fs.readFileSync(xpFile));
-        }
+let data = {};
 
-        if (!data[message.author.id]) {
-            data[message.author.id] = {
-                xp: 0,
-                level: 1
-            };
-        }
+if (fs.existsSync(xpFile)) {
+    data = JSON.parse(fs.readFileSync(xpFile));
+}
 
-        data[message.author.id].xp += 5;
+if (!data[message.author.id]) {
+    data[message.author.id] = {
+        xp: 0,
+        totalXp: 0,
+        level: 1
+    };
+}
 
-        const needed =
-            data[message.author.id].level * 100;
+const user = data[message.author.id];
 
-        if (data[message.author.id].xp >= needed) {
+// 60 second cooldown
+const cooldown = 60000;
 
-            data[message.author.id].level++;
-
-            data[message.author.id].xp = 0;
-
- if (fs.existsSync("./data/rankchannel.json")) {
-
-    const rankData = JSON.parse(
-        fs.readFileSync("./data/rankchannel.json")
+const lastXp =
+    global.xpCooldowns.get(
+        message.author.id
     );
 
-    const levelChannel =
-        message.guild.channels.cache.get(
-            rankData.channelId
+if (
+    !lastXp ||
+    Date.now() - lastXp >= cooldown
+) {
+
+    global.xpCooldowns.set(
+        message.author.id,
+        Date.now()
+    );
+
+    // Random XP gain
+    const xpGain =
+        Math.floor(
+            Math.random() * 6
+        ) + 5; // 5-10 XP
+
+    user.xp += xpGain;
+    user.totalXp += xpGain;
+
+    const needed =
+        Math.floor(
+            100 *
+            Math.pow(
+                user.level,
+                1.5
+            )
         );
 
-    if (levelChannel) {
+    if (user.xp >= needed) {
 
-        await levelChannel.send(
-            `🎉 ${message.author} reached level ${data[message.author.id].level}!`
-        );
+        user.level++;
+        user.xp = 0;
 
+        // Level-up channel
+        if (
+            fs.existsSync(
+                "./data/rankchannel.json"
+            )
+        ) {
+
+            const rankData =
+                JSON.parse(
+                    fs.readFileSync(
+                        "./data/rankchannel.json"
+                    )
+                );
+
+            const levelChannel =
+                message.guild.channels.cache.get(
+                    rankData.channelId
+                );
+
+            if (levelChannel) {
+
+                levelChannel.send(
+                    `🎉 ${message.author} reached **Level ${user.level}**!`
+                );
+            }
+        }
+
+        // Rank roles
+        if (
+            fs.existsSync(
+                "./data/rankroles.json"
+            )
+        ) {
+
+            const rankRoles =
+                JSON.parse(
+                    fs.readFileSync(
+                        "./data/rankroles.json"
+                    )
+                );
+
+            const rewardRoleId =
+                rankRoles[user.level];
+
+            if (rewardRoleId) {
+
+                const role =
+                    message.guild.roles.cache.get(
+                        rewardRoleId
+                    );
+
+                if (role) {
+
+                    await message.member.roles
+                        .add(role)
+                        .catch(() => {});
+
+                    message.channel.send(
+                        `🏆 ${message.author} earned the ${role} role!`
+                    );
+                }
+            }
+        }
     }
-}        }
 
-        fs.writeFileSync(
-            xpFile,
-            JSON.stringify(data, null, 2)
-        );
-
+    fs.writeFileSync(
+        xpFile,
+        JSON.stringify(data, null, 2)
+    );
+}
+        //////////////////////////////////////////////////
         // AUTOMOD
+        //////////////////////////////////////////////////
+
         if (global.automodEnabled) {
 
             const blocked = [
@@ -80,7 +164,8 @@ module.exports = {
                         .includes(word)
                 ) {
 
-                    await message.delete().catch(() => {});
+                    await message.delete()
+                        .catch(() => {});
 
                     await message.channel.send(
                         `${message.author}, that message was blocked.`
@@ -91,9 +176,14 @@ module.exports = {
             }
         }
 
+        //////////////////////////////////////////////////
         // STICKY MESSAGES
+        //////////////////////////////////////////////////
+
         const stickyData =
-            global.stickyMessages.get(message.channel.id);
+            global.stickyMessages.get(
+                message.channel.id
+            );
 
         if (!stickyData) return;
 
@@ -103,17 +193,21 @@ module.exports = {
 
                 const oldMessage =
                     await message.channel.messages
-                        .fetch(stickyData.lastMessageId)
+                        .fetch(
+                            stickyData.lastMessageId
+                        )
                         .catch(() => null);
 
                 if (oldMessage) {
-                    await oldMessage.delete().catch(() => {});
+
+                    await oldMessage.delete()
+                        .catch(() => {});
                 }
             }
 
             const newSticky =
                 await message.channel.send(
-                    `${stickyData.content}`
+                    stickyData.content
                 );
 
             stickyData.lastMessageId =
