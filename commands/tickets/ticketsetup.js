@@ -2,15 +2,14 @@ const {
     SlashCommandBuilder,
     EmbedBuilder,
     ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle
+    StringSelectMenuBuilder
 } = require('discord.js');
 
 module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('ticketsetup')
-        .setDescription('Setup ticket system')
+        .setDescription('🔒 Owner Only • Setup ticket system')
         .addChannelOption(option =>
             option
                 .setName('channel')
@@ -26,21 +25,62 @@ module.exports = {
 
     async execute(interaction) {
 
-        const channel = interaction.options.getChannel('channel');
-        const supportRole = interaction.options.getRole('supportrole');
+        const channel =
+            interaction.options.getChannel('channel');
+
+        const supportRole =
+            interaction.options.getRole('supportrole');
 
         const embed = new EmbedBuilder()
-            .setTitle('Support Tickets')
-            .setDescription('Click below to open a ticket.')
+            .setTitle('🎟️ Support Tickets')
+            .setDescription(
+`Need help?
+
+Choose a reason from the menu below and a ticket will be created automatically.
+
+💰 Purchase Support
+🤖 Bot Support
+🌐 Website Support
+❓ General Help
+📝 Other`
+            )
             .setColor('#8b5cf6');
 
-        const button = new ButtonBuilder()
-            .setCustomId(`ticket_${supportRole.id}`)
-            .setLabel('Open Ticket')
-            .setStyle(ButtonStyle.Primary);
+        const menu =
+            new StringSelectMenuBuilder()
+                .setCustomId(`ticket_reason_${supportRole.id}`)
+                .setPlaceholder('Select a reason')
+                .addOptions(
+                    {
+                        label: 'Purchase Support',
+                        value: 'purchase',
+                        emoji: '💰'
+                    },
+                    {
+                        label: 'Bot Support',
+                        value: 'bot',
+                        emoji: '🤖'
+                    },
+                    {
+                        label: 'Website Support',
+                        value: 'website',
+                        emoji: '🌐'
+                    },
+                    {
+                        label: 'General Help',
+                        value: 'help',
+                        emoji: '❓'
+                    },
+                    {
+                        label: 'Other',
+                        value: 'other',
+                        emoji: '📝'
+                    }
+                );
 
-        const row = new ActionRowBuilder()
-            .addComponents(button);
+        const row =
+            new ActionRowBuilder()
+                .addComponents(menu);
 
         await channel.send({
             embeds: [embed],
@@ -48,7 +88,7 @@ module.exports = {
         });
 
         await interaction.reply({
-            content: 'Ticket system setup complete.',
+            content: '✅ Ticket system setup complete.',
             ephemeral: true
         });
     }

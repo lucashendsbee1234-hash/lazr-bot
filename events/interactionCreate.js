@@ -30,7 +30,8 @@ const ownerCommands = [
     "givexp",
     "resetlevel",
     "rankrole",
-    "welcomesetup"
+    "welcomesetup",
+    "verifyticketsetup"
 ];
 
 if (
@@ -67,7 +68,93 @@ if (
                 }
             }
         }
+if (interaction.isStringSelectMenu()) {
 
+    if (interaction.customId.startsWith("ticket_reason_")) {
+
+        const reason = interaction.values[0];
+
+        const supportRoleId =
+            interaction.customId.split("_")[2];
+
+        const existingChannel =
+            interaction.guild.channels.cache.find(
+                c =>
+                    c.name ===
+                    `ticket-${interaction.user.username.toLowerCase()}`
+            );
+
+        if (existingChannel) {
+
+            return interaction.reply({
+                content: "You already have a ticket open.",
+                ephemeral: true
+            });
+        }
+
+        const channel =
+            await interaction.guild.channels.create({
+
+                name: `ticket-${interaction.user.username}`,
+
+                permissionOverwrites: [
+                    {
+                        id: interaction.guild.id,
+                        deny: ['ViewChannel']
+                    },
+                    {
+                        id: interaction.user.id,
+                        allow: ['ViewChannel', 'SendMessages']
+                    },
+                    {
+                        id: supportRoleId,
+                        allow: ['ViewChannel', 'SendMessages']
+                    }
+                ]
+            });
+
+        const {
+            ActionRowBuilder,
+            ButtonBuilder,
+            ButtonStyle
+        } = require('discord.js');
+
+        const closeButton = new ButtonBuilder()
+            .setCustomId('close_ticket')
+            .setLabel('Close Ticket')
+            .setStyle(ButtonStyle.Danger);
+
+        const row =
+            new ActionRowBuilder()
+                .addComponents(closeButton);
+
+        const reasons = {
+            purchase: "💰 Purchase Support",
+            bot: "🤖 Bot Support",
+            website: "🌐 Website Support",
+            help: "❓ General Help",
+            other: "📝 Other"
+        };
+
+        await channel.send({
+            content:
+`📋 **Ticket Information**
+
+👤 User: ${interaction.user}
+
+📂 Reason:
+${reasons[reason]}
+
+Please explain your issue below and a staff member will assist you shortly.`,
+            components: [row]
+        });
+
+        return interaction.reply({
+            content: `✅ Ticket created: ${channel}`,
+            ephemeral: true
+        });
+    }
+}
         // BUTTONS
         if (interaction.isButton()) {
 
@@ -84,73 +171,77 @@ if (
                 });
             }
 
-            // TICKET BUTTON
-            if (interaction.customId.startsWith('ticket_')) {
 
-                const supportRoleId = interaction.customId.split('_')[1];
+            // VERIFY TICKET BUTTON
+if (interaction.customId === 'verify_ticket') {
 
-                const existingChannel =
-                    interaction.guild.channels.cache.find(
-                        c =>
-                            c.name ===
-                            `ticket-${interaction.user.username.toLowerCase()}`
-                    );
+    const existingChannel =
+        interaction.guild.channels.cache.find(
+            c =>
+                c.name ===
+                `verify-${interaction.user.username.toLowerCase()}`
+        );
 
-                if (existingChannel) {
+    if (existingChannel) {
 
-                    return interaction.reply({
-                        content: 'You already have a ticket open.',
-                        ephemeral: true
-                    });
+        return interaction.reply({
+            content: 'You already have a verification ticket open.',
+            ephemeral: true
+        });
+    }
+
+    const channel =
+        await interaction.guild.channels.create({
+
+            name: `verify-${interaction.user.username}`,
+
+            permissionOverwrites: [
+                {
+                    id: interaction.guild.id,
+                    deny: ['ViewChannel']
+                },
+                {
+                    id: interaction.user.id,
+                    allow: ['ViewChannel', 'SendMessages']
                 }
+            ]
+        });
 
-                const channel =
-                    await interaction.guild.channels.create({
+    const {
+        ActionRowBuilder,
+        ButtonBuilder,
+        ButtonStyle
+    } = require('discord.js');
 
-                        name: `ticket-${interaction.user.username}`,
+    const closeButton = new ButtonBuilder()
+        .setCustomId('close_ticket')
+        .setLabel('Close Ticket')
+        .setStyle(ButtonStyle.Danger);
 
-                        permissionOverwrites: [
-                            {
-                                id: interaction.guild.id,
-                                deny: ['ViewChannel']
-                            },
-                            {
-                                id: interaction.user.id,
-                                allow: ['ViewChannel', 'SendMessages']
-                            },
-                            {
-                                id: supportRoleId,
-                                allow: ['ViewChannel', 'SendMessages']
-                            }
-                        ]
-                    });
+    const row =
+        new ActionRowBuilder()
+            .addComponents(closeButton);
 
-                const {
-                    ActionRowBuilder,
-                    ButtonBuilder,
-                    ButtonStyle
-                } = require('discord.js');
+    await channel.send({
+        content:
+`✅ **Verification Support Ticket**
 
-                const closeButton = new ButtonBuilder()
-                    .setCustomId('close_ticket')
-                    .setLabel('Close Ticket')
-                    .setStyle(ButtonStyle.Danger);
+Welcome ${interaction.user}!
 
-                const row =
-                    new ActionRowBuilder()
-                        .addComponents(closeButton);
+Please explain:
+• What happened?
+• What verification step failed?
+• Include screenshots if possible.
 
-                await channel.send({
-                    content: `${interaction.user} welcome to your ticket.`,
-                    components: [row]
-                });
+A staff member will help you shortly.`,
+        components: [row]
+    });
 
-                return interaction.reply({
-                    content: `Ticket created: ${channel}`,
-                    ephemeral: true
-                });
-            }
-
+    return interaction.reply({
+        content: `Verification ticket created: ${channel}`,
+        ephemeral: true
+    });
+}
             // CLOSE BUTTON
             if (interaction.customId === 'close_ticket') {
 
