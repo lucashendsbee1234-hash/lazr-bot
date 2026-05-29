@@ -158,19 +158,21 @@ Please explain your issue below and a staff member will assist you shortly.`,
         // BUTTONS
         if (interaction.isButton()) {
 
-            // VERIFY BUTTON
-            if (interaction.customId.startsWith('verify_')) {
+// VERIFY BUTTON
+if (
+    interaction.customId.startsWith('verify_') &&
+    /^\d+$/.test(interaction.customId.split('_')[1])
+) {
 
-                const roleId = interaction.customId.split('_')[1];
+    const roleId = interaction.customId.split('_')[1];
 
-                await interaction.member.roles.add(roleId);
+    await interaction.member.roles.add(roleId);
 
-                return interaction.reply({
-                    content: 'You are now verified.',
-                    ephemeral: true
-                });
-            }
-
+    return interaction.reply({
+        content: 'You are now verified.',
+        ephemeral: true
+    });
+}
 
             // VERIFY TICKET BUTTON
 if (interaction.customId === 'verify_ticket') {
