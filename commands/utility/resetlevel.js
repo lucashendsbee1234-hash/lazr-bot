@@ -8,7 +8,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName("resetlevel")
-        .setDescription("Reset a user's level")
+        .setDescription("Admin Only - Reset a user's level")
         .addUserOption(option =>
             option
                 .setName("user")

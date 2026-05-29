@@ -4,14 +4,19 @@ module.exports = {
     name: Events.InteractionCreate,
 
     async execute(interaction, client) {
-
-        // SLASH COMMANDS
+         // SLASH COMMANDS
         if (interaction.isChatInputCommand()) {
 
             const command = client.commands.get(interaction.commandName);
 
             if (!command) return;
-const OWNER_ID = "1325169208581030010";
+const fs = require("fs");
+
+const config = JSON.parse(
+    fs.readFileSync("./data/config.json")
+);
+
+const OWNER_ID = config.ownerId;
 
 const ownerCommands = [
     "verifysetup",
@@ -31,7 +36,8 @@ const ownerCommands = [
     "resetlevel",
     "rankrole",
     "welcomesetup",
-    "verifyticketsetup"
+    "verifyticketsetup",
+    "changeowner.js"
 ];
 
 if (
@@ -173,7 +179,46 @@ if (
         ephemeral: true
     });
 }
+            // CHANGE OWNERS
+if (
+    interaction.customId.startsWith("confirm_owner_")
+) {
 
+    const newOwnerId =
+        interaction.customId.replace(
+            "confirm_owner_",
+            ""
+        );
+
+    const fs = require("fs");
+
+    const config =
+        JSON.parse(
+            fs.readFileSync("./data/config.json")
+        );
+
+    config.ownerId = newOwnerId;
+
+    fs.writeFileSync(
+        "./data/config.json",
+        JSON.stringify(config, null, 2)
+    );
+
+    return interaction.update({
+        content:
+`✅ Ownership transferred to <@${newOwnerId}>`,
+        components: []
+    });
+}
+
+if (interaction.customId === "cancel_owner") {
+
+    return interaction.update({
+        content:
+            "❌ Ownership transfer cancelled.",
+        components: []
+    });
+}
             // VERIFY TICKET BUTTON
 if (interaction.customId === 'verify_ticket') {
 

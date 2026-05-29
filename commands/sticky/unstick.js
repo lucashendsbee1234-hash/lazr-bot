@@ -4,7 +4,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('unstick')
-        .setDescription('Remove sticky'),
+        .setDescription('Admin Only - Remove sticky'),
 
     async execute(interaction) {
 

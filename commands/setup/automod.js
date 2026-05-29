@@ -6,7 +6,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('automod')
-        .setDescription('Enable automod'),
+        .setDescription('Admin Only - Enable automod'),
 
     async execute(interaction) {
 

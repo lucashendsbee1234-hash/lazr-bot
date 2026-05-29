@@ -6,7 +6,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('welcomesetup')
-        .setDescription('Setup welcome system')
+        .setDescription('Admin Only - Setup welcome system')
         .addChannelOption(option =>
             option
                 .setName('channel')

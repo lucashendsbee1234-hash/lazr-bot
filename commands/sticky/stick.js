@@ -4,7 +4,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('stick')
-        .setDescription('Sticky message')
+        .setDescription('Admin Only - Sticky message')
         .addStringOption(option =>
             option
                 .setName('message')

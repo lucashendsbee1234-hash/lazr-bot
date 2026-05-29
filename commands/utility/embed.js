@@ -7,7 +7,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('embed')
-        .setDescription('Create embed')
+        .setDescription('Admin Only - Create embed')
         .addStringOption(option =>
             option
                 .setName('title')

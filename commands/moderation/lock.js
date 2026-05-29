@@ -4,7 +4,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('lock')
-        .setDescription('Lock channel'),
+        .setDescription('Admin Only - Lock channel'),
 
     async execute(interaction) {
 

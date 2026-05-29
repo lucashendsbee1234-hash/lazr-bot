@@ -8,7 +8,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName("rankrole")
-        .setDescription("Set a role reward")
+        .setDescription("Admin Only - Set a role reward")
         .addIntegerOption(option =>
             option
                 .setName("level")

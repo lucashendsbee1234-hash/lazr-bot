@@ -9,7 +9,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName("setlevel")
-        .setDescription("Set a user's level")
+        .setDescription("Admin Only - Set a user's level")
         .addUserOption(option =>
             option
                 .setName("user")

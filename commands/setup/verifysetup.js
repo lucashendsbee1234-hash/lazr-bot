@@ -10,7 +10,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('verifysetup')
-        .setDescription('Setup verification')
+        .setDescription('Admin Only - Setup verification')
         .addChannelOption(option =>
             option
                 .setName('channel')

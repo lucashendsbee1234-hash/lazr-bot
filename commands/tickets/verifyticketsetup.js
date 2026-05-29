@@ -9,7 +9,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('verifyticketsetup')
-        .setDescription('🔒 Owner Only • Create verify ticket panel'),
+        .setDescription('Admin Only - Create verify ticket panel'),
 
     async execute(interaction) {
 

@@ -4,7 +4,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('status')
-        .setDescription('Change bot status')
+        .setDescription('Admin Only - Change bot status')
         .addStringOption(option =>
             option
                 .setName('text')

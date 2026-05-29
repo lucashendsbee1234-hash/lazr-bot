@@ -4,7 +4,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('clear')
-        .setDescription('Delete messages')
+        .setDescription('Admin Only - Delete messages')
         .addIntegerOption(option =>
             option
                 .setName('amount')

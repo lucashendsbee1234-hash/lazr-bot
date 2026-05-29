@@ -6,7 +6,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('close')
-        .setDescription('Close ticket'),
+        .setDescription('Admin Only - Close ticket'),
 
     async execute(interaction) {
 

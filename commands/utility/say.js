@@ -4,7 +4,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('say')
-        .setDescription('Bot says message')
+        .setDescription('Admin Only - Bot says message')
         .addStringOption(option =>
             option
                 .setName('message')

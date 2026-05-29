@@ -9,7 +9,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName('ticketsetup')
-        .setDescription('🔒 Owner Only • Setup ticket system')
+        .setDescription('Admin Only - Setup ticket system')
         .addChannelOption(option =>
             option
                 .setName('channel')

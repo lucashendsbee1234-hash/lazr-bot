@@ -9,7 +9,7 @@ module.exports = {
 
     data: new SlashCommandBuilder()
         .setName("ranksetup")
-        .setDescription("Set the level-up channel")
+        .setDescription("Admin Only - Set the level-up channel")
         .addChannelOption(option =>
             option
                 .setName("channel")
