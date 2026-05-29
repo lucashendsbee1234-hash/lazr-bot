@@ -11,6 +11,32 @@ module.exports = {
             const command = client.commands.get(interaction.commandName);
 
             if (!command) return;
+const OWNER_ID = "1325169208581030010";
+
+const ownerCommands = [
+    "verifysetup",
+    "ticketsetup",
+    "automod",
+    "close",
+    "stick",
+    "unstick",
+    "status",
+    "say",
+    "embed",
+    "lock",
+    "unlock",
+    "welcomesetup"
+];
+
+if (
+    ownerCommands.includes(interaction.commandName) &&
+    interaction.user.id !== OWNER_ID
+) {
+    return interaction.reply({
+        content: "❌ This command is owner only.",
+        ephemeral: true
+    });
+}
 
             try {
 
