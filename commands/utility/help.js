@@ -25,11 +25,11 @@ module.exports = {
                 {
                     name: "/ping",
                     value: "Shows bot ping"
-                }
+                },
                 {
                     name: "/userinfo",
                     value: "Get info on a user"
-                },
+                }
             );
 
         await interaction.reply({
